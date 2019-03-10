@@ -8,5 +8,5 @@ if __name__ == '__main__':
 	DEBUG = 0
 
 	parser = argparse.ArgumentParser()
-	parser.add_argument('--Data_path', default='./Data/LDC2006T06/data/English/')
+	parser.add_argument('--data_path', default='./Data/LDC2006T06/data/English/')
 
