@@ -1,26 +1,4 @@
-import json
-import os
-import glob
-import xml.etree.ElementTree as ET
-
-
-def parse_sgm(fh):
-	tree = ET.parse(fh)
-	root = tree.getroot()
-
-	assert root.tag == 'DOC'
-
-	for child in root:
-		if child.tag == 'BODY':
-			TEXT = child[0]
-			for turns in TEXT:
-				print(turns.text.replace(" ", "").replace("\n", ""))
-
-
-def parse_sgms(path):
-	files = glob.glob(path+'*.sgm')
-	for f in files:
-		parse_sgm(f)
+from chinese_sgm_parser import *
 
 
 if __name__ == '__main__':
