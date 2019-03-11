@@ -1,14 +1,14 @@
 import glob
 import xml.etree.ElementTree as ET
 import json
+import re
 
 
 def bn_parse_sgm(fh):
 	tree = ET.parse(fh)
 	root = tree.getroot()
 	bn_dic = {}
-	sent_list = []
-	char_list = []
+	turns = []
 	assert root.tag == 'DOC'
 
 	for child in root:
@@ -16,16 +16,24 @@ def bn_parse_sgm(fh):
 			bn_dic['DOCID'] = child.text
 		elif child.tag == 'BODY':
 			TEXT = child[0]
-			for turns in TEXT:
-				for c in turns.text:
-					char_list.append(c)
-				print(turns.text)
-				for i, c in enumerate(char_list):
-					if c == '局':
-						print(char_list[:i])
-						print(str(i) + ": " + c)
-				print(turns.text.replace(" ", "").replace("\n", ""))
+			for turn in TEXT:
+				print(turn.text.replace(" ", "").replace("\n", ""))
+				turns.append(turn)
 
+	#################################
+
+	doc_chars = []
+
+	with open(fh) as f:
+		for l in f:
+			l = re.sub('<.*?>', '', l)
+			for c in l:
+				doc_chars.append(c)
+
+	bn_dic['turns'] = turns
+	bn_dic['doc_chars'] = doc_chars
+
+	return bn_dic
 
 
 def nw_parse_sgm(fh):
@@ -59,7 +67,7 @@ def parse_sgms(path):
 	if 'bn' in path:
 		files = glob.glob(path+'*.sgm')
 		for f in files:
-			bn_parse_sgm(f)
+			bn_dic = bn_parse_sgm(f)
 
 	elif 'nw' in path:
 		files = glob.glob(path + '*.sgm')

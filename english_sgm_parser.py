@@ -10,30 +10,32 @@ def bn_parse_sgm(fh):
 	char_list = []
 	assert root.tag == 'DOC'
 
+	char_list.append(root.text)
+
 	for child in root:
+		char_list.append(child.text)
 		if child.tag == 'DOCID':
 			bn_dic['DOCID'] = child.text
 		elif child.tag == 'BODY':
 			TEXT = child[0]
+			char_list.append(TEXT.text)
 			for turns in TEXT:
 				for c in turns.text:
 					char_list.append(c)
-				# print(turns.text)
-				# for i, c in enumerate(char_list):
-				# 	if c == '局':
-				# 		print(char_list[:i])
-				# 		print(str(i) + ": " + c)
-				# print(turns.text.replace(" ", "").replace("\n", ""))
-	# print(char_list[545:586])
-	# print(char_list[612:653])
-	print(char_list[449:529])
+				print(turns.text)
+				for i, c in enumerate(char_list):
+					if c == '局':
+						print(char_list[:i])
+						print(str(i) + ": " + c)
+				print(turns.text.replace(" ", "").replace("\n", ""))
+	print(char_list[545:586])
 
-	# doc_char_list = []
-	# with open(fh) as f:
-	# 	for l in f:
-	# 		for c in l:
-	# 			doc_char_list.append(c)
-	# print(doc_char_list[612:653])
+	doc_char_list = []
+	with open(fh) as f:
+		for l in f:
+			for c in l:
+				doc_char_list.append(c)
+	print(doc_char_list[0:251])
 
 
 
@@ -82,7 +84,7 @@ def parse_sgms(path):
 
 
 if __name__ == '__main__':
-	bn_parse_sgm('/media/moju/data/work/ace05-parser/Data/LDC2006T06/data/English/bn/fp1/CNN_ENG_20030305_170125.1.sgm')
+	bn_parse_sgm('/media/moju/data/work/ace05-parser/Data/LDC2006T06/data/Chinese/bn/adj/CBS20001001.1000.0041.sgm')
 
 
 
