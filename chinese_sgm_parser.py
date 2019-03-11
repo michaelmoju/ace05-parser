@@ -29,7 +29,6 @@ def bn_parse_sgm(fh):
 			l = re.sub('<.*?>', '', l)
 			for c in l:
 				doc_chars.append(c)
-
 	bn_dic['turns'] = turns
 	bn_dic['doc_chars'] = doc_chars
 
