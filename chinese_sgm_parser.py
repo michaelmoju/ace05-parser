@@ -121,7 +121,6 @@ def parse_sgms(path):
 			dic = wl_parse_sgm(f)
 			dics[dic['DOCID']] = dic['doc_chars']
 
-	print(len(dics))
 	return dics
 
 

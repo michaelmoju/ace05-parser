@@ -26,8 +26,8 @@ def parse_apf(fh):
 				mention_dic = {}
 				mention_dic['mention_id'] = mention.get('ID')
 				mention_dic['extent'] = mention[0][0].text
-				mention_dic['start'] = mention[0][0].get('START')
-				mention_dic['end'] = mention[0][0].get('END')
+				mention_dic['start'] = int(mention[0][0].get('START'))
+				mention_dic['end'] = int(mention[0][0].get('END'))
 				e_mention_list.append(mention_dic)
 			entity_dic['entityMentionList'] = e_mention_list
 
@@ -48,20 +48,22 @@ def parse_apf(fh):
 					relation_dic['id'] = child.get('ID')
 					for mention_child in child:
 						if mention_child.tag == 'extent':
+							relation_dic['start'] = int(mention_child[0].get('START'))
+							relation_dic['end'] = int(mention_child[0].get('END'))
 							relation_dic['extent'] = mention_child[0].text
 
 						if mention_child.tag == 'relation_mention_argument':
 							if mention_child.get('ROLE') == 'Arg-1':
 								mentionArg1_dic['argMentionid'] = mention_child.get('REFID')
 								mentionArg1_dic['extent'] = mention_child[0][0].text
-								mentionArg1_dic['start'] = mention_child[0][0].get('START')
-								mentionArg1_dic['end'] = mention_child[0][0].get('END')
+								mentionArg1_dic['start'] = int(mention_child[0][0].get('START'))
+								mentionArg1_dic['end'] = int(mention_child[0][0].get('END'))
 								relation_dic['mentionArg1'] = mentionArg1_dic
 							elif mention_child.get('ROLE') == 'Arg-2':
 								mentionArg2_dic['extent'] = mention_child.get('REFID')
 								mentionArg2_dic['argMentionid'] = mention_child[0][0].text
-								mentionArg2_dic['start'] = mention_child[0][0].get('START')
-								mentionArg2_dic['end'] = mention_child[0][0].get('END')
+								mentionArg2_dic['start'] = int(mention_child[0][0].get('START'))
+								mentionArg2_dic['end'] = int(mention_child[0][0].get('END'))
 								relation_dic['mentionArg2'] = mentionArg2_dic
 					relation_list.append(relation_dic)
 
