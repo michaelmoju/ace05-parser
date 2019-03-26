@@ -14,7 +14,7 @@ def bn_parse_sgm(fh):
 	for child in root:
 		if child.tag == 'DOCID':
 			# print(child.text)
-			bn_dic['DOCID'] = child.text
+			bn_dic['DOCID'] = child.text.strip()
 		elif child.tag == 'BODY':
 			TEXT = child[0]
 			for turn in TEXT:
@@ -43,7 +43,7 @@ def nw_parse_sgm(fh):
 
 	for child in root:
 		if child.tag == 'DOCID':
-			nw_dic['DOCID'] = child.text
+			nw_dic['DOCID'] = child.text.strip()
 		elif child.tag == 'BODY':
 			HEADLINE = child[0]
 			nw_dic['HEADLINE'] = HEADLINE.text.replace(" ", "").replace("\n", "")
@@ -73,7 +73,7 @@ def wl_parse_sgm(fh):
 
 	for child in root:
 		if child.tag == 'DOCID':
-			wl_dic['DOCID'] = child.text
+			wl_dic['DOCID'] = child.text.strip()
 		elif child.tag == 'BODY':
 			HEADLINE = child[0]
 			wl_dic['HEADLINE'] = HEADLINE.text.replace(" ", "").replace("\n", "")
@@ -94,7 +94,6 @@ def wl_parse_sgm(fh):
 			for c in l:
 				doc_chars.append(c)
 	wl_dic['doc_chars'] = doc_chars
-	# print(doc_chars[155:188])
 
 	return wl_dic
 

@@ -60,8 +60,8 @@ def parse_apf(fh):
 								mentionArg1_dic['end'] = int(mention_child[0][0].get('END'))
 								relation_dic['mentionArg1'] = mentionArg1_dic
 							elif mention_child.get('ROLE') == 'Arg-2':
-								mentionArg2_dic['extent'] = mention_child.get('REFID')
-								mentionArg2_dic['argMentionid'] = mention_child[0][0].text
+								mentionArg2_dic['argMentionid'] = mention_child.get('REFID')
+								mentionArg2_dic['extent'] = mention_child[0][0].text
 								mentionArg2_dic['start'] = int(mention_child[0][0].get('START'))
 								mentionArg2_dic['end'] = int(mention_child[0][0].get('END'))
 								relation_dic['mentionArg2'] = mentionArg2_dic
