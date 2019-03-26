@@ -6,9 +6,12 @@ import os
 
 
 def is_in_sentence(index, sentence_start, sentence_end):
-	if index<sentence_start: return False
-	elif index>sentence_end: return False
-	else: return True
+	if index < sentence_start:
+		return False
+	elif index > sentence_end:
+		return False
+	else:
+		return True
 
 
 def clean_string(string):
@@ -24,7 +27,7 @@ def index_clean(sent_start, sent_string, arg_index):
 	delete_n = 0
 	for t_index, t in enumerate(sent_string):
 		if t == "\n" or t == " ":
-			assert (arg_index!=t_index)
+			assert (arg_index != t_index)
 			if arg_index > t_index:
 				# print('arg_index:{}'.format(arg_index))
 				# print('t_index:{}'.format(t_index))
@@ -33,8 +36,51 @@ def index_clean(sent_start, sent_string, arg_index):
 	return arg_index - delete_n
 
 
-def get_relations_from_file(docID, sgm_dics, dic2relations):
+def preserve_relation_example(relation_mention, out_relation_list, sentence_index, sentence):
 
+	out_relation_mention = {}
+	mentionArg1_dic = {}
+	mentionArg2_dic = {}
+
+	out_relation_mention['relationID'] = relation_mention['relationID']
+	out_relation_mention['relationType'] = relation_mention['relationType']
+	out_relation_mention['relationSubType'] = relation_mention['relationSubType']
+	out_relation_mention['id'] = relation_mention['id']
+
+	out_relation_mention['start'] = index_clean(sentence['start'], sentence['string'], relation_mention['start'])
+	out_relation_mention['end'] = index_clean(sentence['start'], sentence['string'], relation_mention['end'])
+	out_relation_mention['extent'] = clean_string(relation_mention['extent'])
+
+	mentionArg1_dic['start'] = index_clean(sentence['start'], sentence['string'], relation_mention['mentionArg1']['start'])
+	mentionArg1_dic['end'] = index_clean(sentence['start'], sentence['string'], relation_mention['mentionArg1']['end'])
+	mentionArg1_dic['extent'] = clean_string(relation_mention['mentionArg1']['extent'])
+
+	mentionArg2_dic['start'] = index_clean(sentence['start'], sentence['string'], relation_mention['mentionArg2']['start'])
+	mentionArg2_dic['end'] = index_clean(sentence['start'], sentence['string'], relation_mention['mentionArg2']['end'])
+	mentionArg2_dic['extent'] = clean_string(relation_mention['mentionArg2']['extent'])
+
+	out_relation_mention['sentence_index'] = sentence_index
+
+	out_relation_mention['Tokens'] = []
+	for t in sentence['string']:
+		if not (t == "\n" or t == " "):
+			out_relation_mention['Tokens'].append(t)
+
+	sentence_string = ''
+	for t in out_relation_mention['Tokens']:
+		sentence_string += t
+
+	out_relation_mention['Sentence'] = sentence_string
+	out_relation_mention['sentence_length'] = len(out_relation_mention['Tokens'])
+	out_relation_mention['mentionArg1'] = mentionArg1_dic
+	out_relation_mention['mentionArg2'] = mentionArg2_dic
+
+	out_relation_list.append(out_relation_mention)
+
+	return out_relation_list
+
+
+def get_relations_from_file(docID, sgm_dics, dic2relations):
 	doc_chars = sgm_dics[docID]
 	text = ''
 	sentences = {}
@@ -53,6 +99,11 @@ def get_relations_from_file(docID, sgm_dics, dic2relations):
 			sentence_data = {}
 			string = ''
 			id += 1
+	if string:
+		sentence_data['string'] = string
+		sentence_data['start'] = index - (len(string) - 1)
+		sentence_data['end'] = index
+		sentences[id] = sentence_data
 
 	if "\n\n" in sentences[0]['string']:
 		o_len = len(sentences[0]['string'])
@@ -73,6 +124,7 @@ def get_relations_from_file(docID, sgm_dics, dic2relations):
 	# 		sentences[k]['start'] += redun_len
 
 	relation_list = dic2relations[docID.strip()]
+	out_relation_list = []
 
 	for relation_mention in relation_list:
 		mention_extent_start = relation_mention['start']
@@ -82,41 +134,28 @@ def get_relations_from_file(docID, sgm_dics, dic2relations):
 			if sentence['start'] <= mention_extent_start <= sentence['end']:
 
 				if not (sentence['start'] <= mention_extent_end <= sentence['end']):
-					print('Relation extent over sentence boundary! Remove this relation mention.')
-					print(sentence['string'])
+					print('Relation extent over sentence boundary!')
+					# print(sentence['string'])
 
-				relation_mention['mentionArg1']['start'] = index_clean(sentence['start'], sentence['string'], relation_mention['mentionArg1']['start'])
-				relation_mention['mentionArg1']['end'] = index_clean(sentence['start'], sentence['string'], relation_mention['mentionArg1']['end'])
-				relation_mention['mentionArg1']['extent'] = clean_string(relation_mention['mentionArg1']['extent'])
-				relation_mention['mentionArg2']['start'] = index_clean(sentence['start'], sentence['string'], relation_mention['mentionArg2']['start'])
-				relation_mention['mentionArg2']['end'] = index_clean(sentence['start'], sentence['string'], relation_mention['mentionArg2']['end'])
-				relation_mention['mentionArg2']['extent'] = clean_string(relation_mention['mentionArg2']['extent'])
+				if not (is_in_sentence(relation_mention['mentionArg1']['start'], sentence['start'], sentence['end']) and
+						is_in_sentence(relation_mention['mentionArg1']['end'], sentence['start'], sentence['end']) and
+						is_in_sentence(relation_mention['mentionArg2']['start'], sentence['start'], sentence['end']) and
+						is_in_sentence(relation_mention['mentionArg2']['end'], sentence['start'], sentence['end'])):
+					print('mentionArg over sentence boundary! exit!')
+				else:
+					preserve_relation_example(relation_mention, out_relation_list, sentence_index, sentence)
 
-				relation_mention['start'] = index_clean(sentence['start'], sentence['string'], relation_mention['start'])
-				relation_mention['end'] = index_clean(sentence['start'], sentence['string'], relation_mention['end'])
-				relation_mention['extent'] = clean_string(relation_mention['extent'])
-
-				relation_mention['sentence_index'] = sentence_index
-
-				relation_mention['Tokens'] = []
-				for t in sentence['string']:
-					if not (t == "\n" or t == " "):
-						relation_mention['Tokens'].append(t)
-				relation_mention['sentence_length'] = len(relation_mention['Tokens'])
-
-	return relation_list
+	return out_relation_list
 
 
-def get_relation_from_files(dir, outpath):
+def get_relation_from_files(dir, outpath, sgm_dics, dic2relations):
 	files = glob.glob(dir + '*.sgm')
 	for f in files:
 		docID = os.path.splitext(os.path.basename(f))[0]
 
-		sgm_dics = parse_sgms(dir)
-		dic2relations = parse_apfs_relations(dir)
 		relation_list = get_relations_from_file(docID, sgm_dics, dic2relations)
 
-		with open(outpath+docID+'.relationMention.json', 'w') as f:
+		with open(outpath + docID + '.relationMention.json', 'w') as f:
 			json.dump(relation_list, f, indent=4, ensure_ascii=False)
 
 
@@ -138,19 +177,14 @@ if __name__ == '__main__':
 	nw_path = data_path + 'nw/adj/'
 	wl_path = data_path + 'wl/adj/'
 
-	get_relation_from_files(bn_path, output_path+'bn/adj/')
+	sgm_dics = parse_sgms(bn_path)
+	dic2relations = parse_apfs_relations(bn_path)
+	get_relation_from_files(bn_path, output_path + 'bn/adj/', sgm_dics, dic2relations)
 
-	# sgm_dics = parse_sgms(wl_path)
-	# dic2relations = parse_apfs_relations(wl_path)
-	#
-	# relation_list = get_relations_from_file('DAVYZW_20050105.1242', sgm_dics, dic2relations)
-	#
-	# with open('output/test.json', 'w') as f:
-	#
-	# 	json.dump(relation_list, f, indent=4, ensure_ascii=False)
+	sgm_dics = parse_sgms(nw_path)
+	dic2relations = parse_apfs_relations(nw_path)
+	get_relation_from_files(nw_path, output_path + 'nw/adj/', sgm_dics, dic2relations)
 
-
-
-
-
-
+	sgm_dics = parse_sgms(wl_path)
+	dic2relations = parse_apfs_relations(wl_path)
+	get_relation_from_files(wl_path, output_path + 'wl/adj/', sgm_dics, dic2relations)
