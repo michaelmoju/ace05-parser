@@ -1,15 +1,16 @@
 from chinese_sgm_parser import *
 from chinese_apf_xml_parser import *
+import json
 
 
 def index_clean(sent_start, sent_string, arg_index):
+	delete_n = 0
 	for t_index, t in enumerate(sent_string):
-		if t == "\n" or " ":
+		if t == "\n" or t == " ":
 			assert (arg_index!=t_index)
 			if arg_index > t_index:
-				arg_index -= 1
-
-	return arg_index - sent_start
+				delete_n += 1
+	return arg_index - sent_start - delete_n
 
 
 def get_relations_from_file(docID, sgm_dics, dic2relations):
@@ -42,8 +43,6 @@ def get_relations_from_file(docID, sgm_dics, dic2relations):
 
 	relation_list = dic2relations[docID.strip()]
 
-	print(sentences)
-
 	for relation_mention in relation_list:
 		for sentence_index, sentence in sentences.items():
 			if (sentence['start'] <= relation_mention['start'] <= sentence['end']):
@@ -63,7 +62,7 @@ def get_relations_from_file(docID, sgm_dics, dic2relations):
 					if not (t == "\n" or t == " "):
 						relation_mention['Tokens'].append(t)
 
-				assert len(relation_mention['Tokens']) == relation_mention['sentence_length']
+				# assert len(relation_mention['Tokens']) == relation_mention['sentence_length']
 	return relation_list
 
 
@@ -73,7 +72,7 @@ if __name__ == '__main__':
 	DEBUG = 0
 
 	parser = argparse.ArgumentParser()
-	parser.add_argument('--data_path', default='./Data/LDC2006T06/data/Chinese/')
+	parser.add_argument('data_path', default='./Data/LDC2006T06/data/Chinese/')
 
 	args = parser.parse_args()
 
@@ -87,7 +86,10 @@ if __name__ == '__main__':
 	dic2relations = parse_apfs_relations(bn_path)
 
 	relation_list = get_relations_from_file(' CBS20001001.1000.0041 ', sgm_dics, dic2relations)
-	print(relation_list)
+
+	with open('test.json', 'w', encoding='UTF-8') as f:
+
+		json.dump(relation_list, f, indent=4)
 
 
 
