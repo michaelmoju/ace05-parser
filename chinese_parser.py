@@ -6,7 +6,9 @@ import os
 
 
 def is_in_sentence(index, sentence_start, sentence_end):
-
+	if index<sentence_start: return False
+	elif index>sentence_end: return False
+	else: return True
 
 
 def clean_string(string):
