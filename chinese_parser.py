@@ -99,11 +99,12 @@ def get_relations_from_file(docID, sgm_dics, dic2relations):
 			sentence_data = {}
 			string = ''
 			id += 1
-	if string:
-		sentence_data['string'] = string
-		sentence_data['start'] = index - (len(string) - 1)
-		sentence_data['end'] = index
-		sentences[id] = sentence_data
+		if index == (len(doc_chars)-1):
+			if string:
+				sentence_data['string'] = string
+				sentence_data['start'] = index - (len(string) - 1)
+				sentence_data['end'] = index
+				sentences[id] = sentence_data
 
 	if "\n\n" in sentences[0]['string']:
 		o_len = len(sentences[0]['string'])
@@ -115,13 +116,6 @@ def get_relations_from_file(docID, sgm_dics, dic2relations):
 		sentences[0]['string'] = re.sub('.* \n?', '', sentences[0]['string'])
 		redun_len = o_len - len(sentences[0]['string'])
 		sentences[0]['start'] += redun_len
-
-	# for k, v in sentences.items():
-	# 	if "\n\n" in v['string']:
-	# 		o_len = len(v['string'])
-	# 		sentences[k]['string'] = re.sub('.*\n\n?', '', v['string'])
-	# 		redun_len = o_len - len(sentences[k]['string'])
-	# 		sentences[k]['start'] += redun_len
 
 	relation_list = dic2relations[docID.strip()]
 	out_relation_list = []
