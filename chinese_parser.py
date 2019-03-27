@@ -77,8 +77,6 @@ def preserve_relation_example(relation_mention, out_relation_list, sentence_inde
 
 	out_relation_list.append(out_relation_mention)
 
-	return out_relation_list
-
 
 def get_relations_from_file(docID, sgm_dics, dic2relations):
 	doc_chars = sgm_dics[docID]
