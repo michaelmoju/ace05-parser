@@ -1,8 +1,7 @@
 import chinese_sgm_parser
-import english_sgm_parser
+from englishParser import english_sgm_parser
 import argparse
 import re
-from stanfordcorenlp import StanfordCoreNLP
 
 
 def get_relations_from_file(docID, sgm_dics):

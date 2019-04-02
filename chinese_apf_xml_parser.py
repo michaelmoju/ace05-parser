@@ -92,6 +92,6 @@ def parse_apfs_relations(fp):
 if __name__ == '__main__':
 	# parse_apf('/media/moju/data/work/ace05-parser/Data/LDC2006T06/data/Chinese/bn/adj/CBS20001001.1000.0041.apf.xml')
 
-	dic2relations = parse_apfs_relations('/media/moju/data/work/ace05-parser/Data/LDC2006T06/data/Chinese/bn/adj/')
-	print(dic2relations['CBS20001001.1000.0041'])
+	dic2relations = parse_apfs_relations('/media/moju/data/work/ace05-parser/Data/LDC2006T06/data/English/bc/adj/')
+	print(dic2relations['CNN_CF_20030303.1900.00'])
 

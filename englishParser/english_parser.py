@@ -1,6 +1,4 @@
-import json
-import xml.etree.ElementTree as ET
-from english_sgm_parser import *
+from englishParser.english_sgm_parser import *
 
 
 if __name__ == '__main__':
