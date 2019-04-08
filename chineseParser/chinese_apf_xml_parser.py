@@ -23,7 +23,7 @@ def parse_apf(fh):
 
 		elif annot.tag == 'relation':
 			relation = Relation(annot)
-			relation_dicts[relation.id] = relation.get_dict()
+			relation_dicts[relation.id] = relation
 
 		elif annot.tag == 'event':
 			event = Event(annot)
@@ -49,7 +49,7 @@ def parse_apfs_doc(fp):
 if __name__ == '__main__':
 
 	doc2entities, doc2relations, doc2events = parse_apfs_doc(
-		'/media/moju/data/work/ace05-parser/Data/LDC2006T06/data/English/bc/adj/')
-	print(doc2entities['CNN_CF_20030303.1900.00'])
-	print(doc2relations['CNN_CF_20030303.1900.00'])
-	print(doc2events['CNN_CF_20030303.1900.00'])
+		'/media/moju/data/work/ace05-parser/Data/LDC2006T06/data/Chinese/bn/adj/')
+	print(doc2entities['CBS20001006.1000.0074'])
+	print(doc2relations['CBS20001006.1000.0074'])
+	print(doc2events['CBS20001006.1000.0074'])

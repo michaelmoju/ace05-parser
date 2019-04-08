@@ -1,39 +1,32 @@
-import chinese_sgm_parser
+from chineseParser import chinese_sgm_parser
 from englishParser import english_sgm_parser
 import argparse
 import re
+import json
+from stanfordcorenlp import StanfordCoreNLP
+from annotation.sgm import SgmDoc, Sentence
 
 
-def get_relations_from_file(docID, sgm_dics):
-	v = sgm_dics.get(' CBS20001001.1000.0041 ')
+def get_SgmDoc_from_file(docID, sgm_dics):
+	v = sgm_dics.get(docID)
 	text = ''
-	sentences = {}
-	sentence_data = {}
 	id = 0
 
+	mySgmDoc = SgmDoc()
 	string = ''
 	for index, t in enumerate(v):
 		text += t
 		string += t
+
+		# sentence segmentation
 		if t == '。':
-			sentence_data['string'] = string
-			sentence_data['start'] = index - (len(string) - 1)
-			sentence_data['end'] = index
-			sentences[id] = sentence_data
-			sentence_data = {}
-			string = ''
+			mySentence = Sentence(string=string, start=index - (len(string) - 1), end=index)
+			if id == 0:
+				mySentence.clean_first_sentence()
+			mySgmDoc.append_sent(mySentence)
 			id += 1
 	print(text)
-
-	for k, v in sentences.items():
-		if "\n\n" in v['string']:
-			o_len = len(v['string'])
-			sentences[k]['string'] = re.sub('.*\n\n?', '', v['string'])
-			redun_len = o_len - len(sentences[k]['string'])
-			sentences[k]['start'] += redun_len
-
-	print(sentences)
-
+	return mySgmDoc
 
 if __name__ == '__main__':
 
@@ -47,49 +40,18 @@ if __name__ == '__main__':
 	corenlp = args.corenlp_path
 
 	if lang == 'chinese':
-		# chinese_sgm_parser.parse_sgms('/media/moju/data/work/ace05-parser/Data/LDC2006T06/data/Chinese/nw/adj/')
-		sgm_dics = chinese_sgm_parser.parse_sgms('/media/moju/data/work/ace05-parser/Data/LDC2006T06/data/Chinese/bn/adj/')
-		v = sgm_dics.get(' CBS20001001.1000.0041 ')
-		text = ''
-		sentences = {}
-		sentence_data = {}
-		id = 0
+		sgm_dics = chinese_sgm_parser.parse_sgms(
+			'/media/moju/data/work/ace05-parser/Data/LDC2006T06/data/Chinese/bn/adj/')
+		mySgmDoc = get_SgmDoc_from_file('CBS20001001.1000.0041', sgm_dics)
 
-		string = ''
-		for index, t in enumerate(v):
-			text += t
-			string += t
-			if t == '。':
-				sentence_data['string'] = string
-				sentence_data['start'] = index - (len(string)-1)
-				sentence_data['end'] = index
-				sentences[id] = sentence_data
-				sentence_data = {}
-				string = ''
-				id += 1
-		print(text)
-
-		for k, v in sentences.items():
-			if "\n\n" in v['string']:
-				o_len = len(v['string'])
-				sentences[k]['string'] = re.sub('.*\n\n?', '', v['string'])
-				redun_len = o_len - len(sentences[k]['string'])
-				sentences[k]['start'] += redun_len
-
-		print(sentences)
-
-		# for k, v in sgm_dics.items():
-		# 	text = ''
-		# 	for t in v:
-		# 		text += t
-		# 	text.replace("\n", "").replace(" ", "")
-		# 	ssplit_sgm_dics[k] = text
-		#
-		# with StanfordCoreNLP(corenlp, port=9000) as nlp:
-		# 	props={'annotators': 'tokenize,ssplit', 'pipelineLanguage': 'zh', 'outputFormat': 'json'}
-		# 	for k, v in ssplit_sgm_dics.items():
-		# 		print(k)
-		# 		print(nlp.annotate(v), props)
+		with StanfordCoreNLP(corenlp, port=9000) as nlp:
+			props={'annotators': 'tokenize', 'pipelineLanguage': 'zh', 'outputFormat': 'json'}
+			for k, v in sentences.items():
+				print(k)
+				annotation = nlp.annotate(v['string'], props)
+				print(annotation)
+				annotation = json.loads(annotation)
+				print(annotation['tokens'])
 
 	elif lang == 'english':
 		english_sgm_parser.parse_sgms('')
