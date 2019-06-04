@@ -4,7 +4,7 @@ import argparse
 import re
 import json
 from stanfordcorenlp import StanfordCoreNLP
-from annotation.sgm import SgmDoc, Sentence
+from annotation.sgm import SgmDoc, SgmSentence
 
 
 def get_SgmDoc_from_file(docID, sgm_dics):
@@ -20,7 +20,7 @@ def get_SgmDoc_from_file(docID, sgm_dics):
 
 		# sentence segmentation
 		if t == '。':
-			mySentence = Sentence(string=string, start=index - (len(string) - 1), end=index)
+			mySentence = SgmSentence(string=string, start=index - (len(string) - 1), end=index)
 			if id == 0:
 				mySentence.clean_first_sentence()
 			mySgmDoc.append_sent(mySentence)

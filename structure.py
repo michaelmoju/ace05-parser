@@ -1,4 +1,4 @@
-from typing import List
+from typing import *
 
 
 class Token:
@@ -6,12 +6,12 @@ class Token:
 		self.id = id
 		self.text = text
 		self.pos = pos
-
-
+		
 class EntityMention:
-	def __init__(self, id: int, type: str, text: str, char_b: int, char_e: int,
-				 tokens: List[Token], token_b: int, token_e: int):
+	def __init__(self, id: str=None, entity_id: str=None, type: str=None, text: str=None, char_b: int=None, char_e: int=None,
+	             tokens: List[Token]=None, token_b: int=None, token_e: int=None):
 		self.id = id
+		self.entity_id = entity_id
 		self.type = type
 		self.text = text
 		self.char_b = char_b
@@ -37,7 +37,7 @@ class EntityMention:
 
 
 class RelationMention:
-	def __init__(self, id: int,type: str, arg1: EntityMention, arg2: EntityMention):
+	def __init__(self, id: int, type: str, arg1: EntityMention, arg2: EntityMention):
 		self.id = id
 		self.type = type
 		self.arg1 = arg1
@@ -51,11 +51,14 @@ class RelationMention:
 
 
 class Sentence:
-	def __init__(self, id: int, docID: str, tokens: List[Token],
-				 entity_mentions: List[EntityMention], relation_mentions: List[RelationMention]):
+	def __init__(self, id: int=None, docID: str=None, tokens: List[Token]=None, text: str=None, char_b: int=None, char_e: int=None,
+				 entity_mentions: List[EntityMention]=None, relation_mentions: List[RelationMention]=None):
 		self.id = id
 		self.docID = docID
 		self.tokens = tokens
+		self.text = text
+		self.char_b = char_b
+		self.char_e = char_e
 		self.entity_mentions = entity_mentions
 		self.relation_mentions = relation_mentions
 
@@ -68,7 +71,7 @@ class Sentence:
 
 
 class Document:
-	def __init__(self, id: int, sentences: List[Sentence]):
+	def __init__(self, id: str, sentences: List[Sentence]):
 		self.id = id
 		self.sentences = sentences
 

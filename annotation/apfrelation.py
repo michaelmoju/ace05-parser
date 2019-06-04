@@ -1,12 +1,12 @@
 from annotation.annotation import Annotation, Mention, Extent
 
 
-class Relation(Annotation):
+class ApfRelation(Annotation):
 	def __init__(self, annot):
 		super().__init__(annot)
 		for mention in annot:
 			if mention.tag == 'relation_mention':
-				self.mentions.append(RelationMention(mention))
+				self.mentions.append(ApfRelationMention(mention))
 
 	def get_dict(self):
 		relation_dict = {'relationID': self.id,
@@ -15,7 +15,7 @@ class Relation(Annotation):
 					   'relationMentionList': [mention.get_dict() for mention in self.mentions]}
 		return relation_dict
 
-class RelationMention(Mention):
+class ApfRelationMention(Mention):
 	def __init__(self, mention):
 		super().__init__()
 		self.id = mention.get('ID')
@@ -24,9 +24,9 @@ class RelationMention(Mention):
 				self.extent = Extent(mention_child)
 			elif mention_child.tag == 'relation_mention_argument':
 				if mention_child.get('ROLE') == 'Arg-1':
-					self.arg1 = RelationMentionArg(mention_child)
+					self.arg1 = ApfRelationMentionArg(mention_child)
 				elif mention_child.get('ROLE') == 'Arg-2':
-					self.arg2 = RelationMentionArg(mention_child)
+					self.arg2 = ApfRelationMentionArg(mention_child)
 
 	def get_dict(self):
 		mention_dict = {'mention_id': self.id,
@@ -34,7 +34,7 @@ class RelationMention(Mention):
 						'mentionArg1': self.arg1.get_dict(), 'mentionArg2': self.arg2.get_dict()}
 		return mention_dict
 
-class RelationMentionArg(Mention):
+class ApfRelationMentionArg(Mention):
 	def __init__(self, mention_child):
 		super().__init__()
 		self.id = mention_child.get('REFID')

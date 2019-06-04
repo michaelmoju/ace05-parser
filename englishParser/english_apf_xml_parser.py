@@ -1,7 +1,7 @@
 import glob
 import xml.etree.ElementTree as ET
-from annotation.entity import Entity
-from annotation.relation import Relation
+from annotation.apfentity import ApfEntity
+from annotation.apfrelation import ApfRelation
 from annotation.event import Event
 
 def parse_apf(fh):
@@ -18,11 +18,11 @@ def parse_apf(fh):
 
 	for annot in root[0]:
 		if annot.tag == 'entity':
-			entity = Entity(annot)
+			entity = ApfEntity(annot)
 			entity_dicts[entity.id] = entity.get_dict()
 
 		elif annot.tag == 'relation':
-			relation = Relation(annot)
+			relation = ApfRelation(annot)
 			relation_dicts[relation.id] = relation.get_dict()
 
 		elif annot.tag == 'event':
@@ -31,7 +31,7 @@ def parse_apf(fh):
 
 	return docID, entity_dicts, relation_dicts, event_dicts
 
-def parse_apfs_doc(fp):
+def parse_apf_docs(fp):
 	doc2entities = {}
 	doc2relations = {}
 	doc2events = {}

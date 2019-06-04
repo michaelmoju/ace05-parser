@@ -7,7 +7,7 @@ class Word:
 		self.start = start
 		self.end = end
 
-class Sentence:
+class SgmSentence:
 	def __init__(self, string, start, end):
 		self.string = string
 		self.start = start
@@ -43,7 +43,7 @@ class SgmDoc:
 
 			# sentence segmentation
 			if t == '。':
-				mySentence = Sentence(string=string, start=index - (len(string) - 1), end=index)
+				mySentence = SgmSentence(string=string, start=index - (len(string) - 1), end=index)
 				# if id == 0:
 				# 	mySentence.clean_first_sentence()
 

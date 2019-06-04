@@ -1,12 +1,12 @@
 from annotation.annotation import Annotation, Mention, Extent
 
 
-class Entity(Annotation):
+class ApfEntity(Annotation):
 	def __init__(self, annot):
 		super().__init__(annot)
 		for mention in annot:
 			if mention.tag == 'entity_mention':
-				self.mentions.append(EntityMention(mention))
+				self.mentions.append(ApfEntityMention(mention))
 
 	def get_dict(self):
 		entity_dict = {'entityID': self.id,
@@ -15,7 +15,7 @@ class Entity(Annotation):
 					   'entityMentionList': [mention.get_dict() for mention in self.mentions]}
 		return entity_dict
 
-class EntityMention(Mention):
+class ApfEntityMention(Mention):
 	def __init__(self, mention):
 		super().__init__()
 		self.id = mention.get('ID')
